@@ -1,39 +1,61 @@
-# [kotlin-logging](https://github.com/oshai/kotlin-logging) [![CI](https://github.com/oshai/kotlin-logging/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/oshai/kotlin-logging/actions/workflows/ci.yml) [![Slack channel](https://img.shields.io/badge/Chat-Slack-blue.svg)](https://kotlinlang.slack.com/messages/kotlin-logging/) [![Maven Central](https://img.shields.io/maven-central/v/io.github.oshai/kotlin-logging.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.github.oshai%22) [![Apache License V.2](https://img.shields.io/badge/license-Apache%20V.2-blue.svg)](https://github.com/oshai/kotlin-logging/blob/master/LICENSE)
+# [kotlin-logging](https://github.com/oshai/kotlin-logging) [![Slack channel](https://img.shields.io/badge/Chat-Slack-blue.svg)](https://kotlinlang.slack.com/messages/kotlin-logging/)
 
-Lightweight Multiplatform logging framework for Kotlin, written in 
-[![Pure Kotlin](https://img.shields.io/badge/100%25-kotlin-blue.svg)](https://kotlinlang.org/).  
-A convenient and performant logging facade.  
+* == Kotlin's logging framework
+  * lightweight
+  * Multiplatform
+  * written | [![Pure Kotlin](https://img.shields.io/badge/100%25-kotlin-blue.svg)](https://kotlinlang.org/)
 
-#### Call log methods, without checking whether the respective log level is enabled
+## Overview
+
+* kotlin-logging
+  * == slf4j-api's wrapper
+  * uses
+    * Kotlin classes
+  * allows
+    * NO need to write the logger & class name
+    * log messages with lazy-evaluated string -- via -- lambda expression `{}` -- TODO: ❓--
+    * ALL previous slf4j implementation
+      * still can be used
+  * Reason to create it: 🧠EXISTING problems
+    * [Idiomatic way of logging in Kotlin](http://stackoverflow.com/questions/34416869/idiomatic-way-of-logging-in-kotlin)
+    * [Best practices for loggers](https://discuss.kotlinlang.org/t/best-practices-for-loggers/226/15)🧠
+
+* [wiki](https://github.com/dancer1325/kotlin-logging/wiki)
+
+### | IntelliJ
+* | file level logger (TODO: ❓)
+  - Text template: `private val logger = io.github.oshai.kotlinlogging.KotlinLogging.logger {}`
+  - Applicable in `Kotlin: top-level`
+
+## Features
+### 👀NO need to check whether the log level is enabled👀
 ```Kotlin
 logger.debug { "Some $expensive message!" }
+
+// Reason: 🧠behind the scenes🧠
+// if (logger.isDebugEnabled) logger.debug("Some $expensive message!")
 ```
 
-Behind the scenes the expensive message do not get evaluated if debug is not enabled:
+### Define the logger / WITHOUT EXPLICITLY specifying the class name
 ```Kotlin
-// This is what happens when you write the above ^^^
-if (logger.isDebugEnabled) logger.debug("Some $expensive message!")
-```
-
-#### Define the logger, without explicitly specifying the class name
-```Kotlin
-// Place definition above class declaration to make field static
+// 👀place ABOVE class declaration👀 -- Reason:🧠make field static🧠
 private val logger = KotlinLogging.logger {}
+
+// Reason: 🧠behind the scenes🧠
+// val logger = LoggerFactory.getLogger("package.ClassName")
 ```
 
-Behind the scenes `val logger` will be created in the class, with the class/file name:
-```Kotlin
-// This is what happens when you write the above ^^^
-val logger = LoggerFactory.getLogger("package.ClassName")
-```
+### Log exceptions / Kotlin-style
+* Kotlin-style
+  * == 
+    * exception -- as -- first parameter
+    * message -- as -- lambda
 
-#### Log exceptions in a Kotlin-style
 ```Kotlin
-// exception as first parameter with message as lambda
 logger.error(exception) { "a $fancy message about the $exception" }
 ```
 
-#### Fluent logging in a Kotlin-style
+### Fluent logging / Kotlin-style
 ```kotlin
 logger.atWarn {
     message    = "foo $bar"
@@ -63,12 +85,23 @@ class FooWithLogging {
 
 ## Download
 
-**Important note:** kotlin-logging depends on slf4j-api (in the JVM artifact). In runtime, it is also required to depend on a logging implementation. More details in [how-to-configure-slf4j](http://saltnlight5.blogspot.co.il/2013/08/how-to-configure-slf4j-with-different.html). And an excellent detailed explanation in [a-guide-to-logging-in-java](https://www.marcobehler.com/guides/a-guide-to-logging-in-java).  
-In version 5 users should also provide slf4j-api dependency.
+* kotlin-logging
+  * -- depends on -- 
+    * slf4j-api
+      * | JVM artifact
+    * slf4j-api dependency
+      * | v5+ -- TODO: is it fine ❓
+    * logging implementation
+      * | runtime
+  * if you ONLY want to log statements | stdout -> add `org.slf4j:slf4j-simple:2.0.3`
+    
+* see 
+  * [how-to-configure-slf4j](http://saltnlight5.blogspot.co.il/2013/08/how-to-configure-slf4j-with-different.html)
+  * [a-guide-to-logging-in-java](https://www.marcobehler.com/guides/a-guide-to-logging-in-java)   
 
-In short, if you just want to log statements to stdout, it's possible to add the following dependency: `org.slf4j:slf4j-simple:2.0.3`.
 
-### 
+### Maven
+
 ```xml
 <dependency>
   <groupId>io.github.oshai</groupId>
@@ -77,32 +110,29 @@ In short, if you just want to log statements to stdout, it's possible to add the
 </dependency>
 ```
 
-See the full example in [kotlin-logging-example-maven](https://github.com/microutils/kotlin-logging-example-maven).  
+* _Example:_ [kotlin-logging-example-maven](https://github.com/microutils/kotlin-logging-example-maven)  
 
 ### Gradle
-```Groovy
-implementation 'io.github.oshai:kotlin-logging-jvm:7.0.3'
-```
-
-
-Alternatively, download the JAR from [github](https://github.com/oshai/kotlin-logging/releases/latest)  or [maven-central](https://repo1.maven.org/maven2/io/github/oshai/).
+* ways
+  * 
+    ```Groovy
+    implementation 'io.github.oshai:kotlin-logging-jvm:7.0.3'
+    ```
+  * download the JAR 
+    * [here](https://github.com/oshai/kotlin-logging/releases/latest) OR
+    * [here](https://repo1.maven.org/maven2/io/github/oshai/)
 
 ### Multiplatform
 
-An experimental multiplatform support is available.  
-More information is available on the [wiki](https://github.com/oshai/kotlin-logging/wiki/Multiplatform-support) and issues [#21](https://github.com/oshai/kotlin-logging/issues/21) [#45](https://github.com/oshai/kotlin-logging/issues/45).
-
-## Overview
-
-After seeing many questions like [Idiomatic way of logging in Kotlin](http://stackoverflow.com/questions/34416869/idiomatic-way-of-logging-in-kotlin) and [Best practices for loggers](https://discuss.kotlinlang.org/t/best-practices-for-loggers/226/15), it seems like there should be a standard for logging and obtaining a logger in Kotlin. kotlin-logging provides a wrapper for slf4j-api to be used by Kotlin classes with the following advantages:
-  - No need to write the logger and class name or logger name boilerplate code.
-  - A straight forward way to log messages with lazy-evaluated string using lambda expression `{}`.
-  - All previous slf4j implementation can still be used.
-
+* experimental
+* see
+  * [wiki](https://github.com/oshai/kotlin-logging/wiki/Multiplatform-support)
+  * [#21](https://github.com/oshai/kotlin-logging/issues/21)
+  * [#45](https://github.com/oshai/kotlin-logging/issues/45)
 
 ## Version 5 vs. previous versions
 
-Version 5 is not backward compatible with previous versions (v.3, v.2, v.1). Group id (in maven) and packages names changed.
+* TODO: Version 5 is not backward compatible with previous versions (v.3, v.2, v.1). Group id (in maven) and packages names changed.
 It is possible to use both version 5 and previous versions side-by-side so some of the code from the old version
 and some new. It is also possible to have libs using old version and use the new version (and vice-versa).  
 In that sense it's a completely new dependency.
@@ -127,8 +157,6 @@ and in the [change log](https://github.com/oshai/kotlin-logging/blob/master/Chan
 - https://github.com/openrndr/openrndr
 - https://github.com/JetBrains/xodus
 
-And many more... (add your name above)
-
 ## FAQ
 
 - Why not use plain slf4j? kotlin-logging has better native Kotlin support. It adds more functionality and enables less boilerplate code.
@@ -136,14 +164,6 @@ And many more... (add your name above)
 - Is location logging possible? Yes, location awareness was added in kotlin-logging 1.4.
 - When I do `logger.debug`, my IntelliJ IDEA run console doesn't show any output. Do you know how I could set the console logger to debug or trace levels? Is this an IDE setting, or can it be set in the call to KLogging()? Setting log level is done per implementation. kotlin-logging and slf4j are just facades for the underlying logging lib (log4j, logback etc') more details [here](http://stackoverflow.com/questions/43146977/how-to-configure-kotlin-logging-logger).
 - Can I access the actual logger? In platforms available yes, via `DelegatingKLogger.underlyingLogger` property.
-
-## Usage
-
-- See [wiki](https://github.com/oshai/kotlin-logging/wiki) for more examples.
-
-It is possible to configure IntelliJ live templates. For file level logger configure the following:
-- Text template: `private val logger = io.github.oshai.kotlinlogging.KotlinLogging.logger {}`.
-- Applicable in `Kotlin: top-level`.
 
 ## Support
 
@@ -163,13 +183,5 @@ It is possible to configure IntelliJ live templates. For file level logger confi
 - https://bednarek.wroclaw.pl/log4j-in-kotlin/
 - https://jaxenter.com/kotlin-logging-168814.html
 
-## Contributing
-
-Any contribution is appreciated.  
-See the contributors list in: https://github.com/oshai/kotlin-logging/graphs/contributors
-
-Pull requests are welcome! See instructions in https://github.com/oshai/kotlin-logging/blob/master/CONTRIBUTING.md.  
-
-[Show your ❤ with a ★](https://github.com/oshai/kotlin-logging/stargazers)
 
 
